@@ -16,19 +16,21 @@
       </el-row>
       <!-- 登录信息 -->
       <div>
-        <div v-if="false">
+        <div v-if="!$store.state.user.userInfo.token" class="logins">
           <nuxt-link to="/user/login">登录/注册</nuxt-link>
         </div>
-        <div>
+        <div v-else>
           <el-dropdown :hide-on-click="false">
             <span class="el-dropdown-link">
-              <img src="http://157.122.54.189:9095/assets/images/avatar.jpg" alt />
-              陈陈渣女
-              <i class="el-icon-arrow-down el-icon--right"></i>
+              <img :src="$axios.defaults.baseURL+$store.state.user.userInfo.user.defaultAvatar" alt />
+              {{$store.state.user.userInfo.user.nickname}}
+              <i
+                class="el-icon-arrow-down el-icon--right"
+              ></i>
             </span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item>个人中心</el-dropdown-item>
-              <el-dropdown-item>退出</el-dropdown-item>
+              <el-dropdown-item @click.native="headleLoginOut">退出</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </div>
@@ -38,7 +40,17 @@
 </template>
 
 <script>
-export default {};
+export default {
+  methods: {
+    headleLoginOut() {
+      this.$store.commit("user/clearUserInfo");
+      this.$message({
+        message: "退出成功",
+        type: "success"
+      });
+    }
+  }
+};
 </script>
 
 <style lang="less" scoped>
@@ -88,6 +100,9 @@ export default {};
       width: 36px;
       vertical-align: middle;
     }
+  }
+  .logins {
+    line-height: 60px;
   }
 }
 </style>
