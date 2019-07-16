@@ -12,20 +12,23 @@
           >{{item}}</span>
         </div>
         <loginForm v-if="current===0"></loginForm>
+        <RegisterForm v-else></RegisterForm>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import loginForm from "@/components/loginForm";
+import loginForm from "@/components/user/loginForm";
+import RegisterForm from "@/components/user/registerForm";
 export default {
   components: {
-    loginForm
+    loginForm,
+    RegisterForm
   },
   data() {
     return {
-      current: 0
+      current: 1
     };
   },
   methods: {
