@@ -1,9 +1,11 @@
 
-export const state = {
-    userInfo: {
-        token: '',
-        user: {
+export const state = () => {
+    return {
+        userInfo: {
+            token: '',
+            user: {
 
+            }
         }
     }
 }

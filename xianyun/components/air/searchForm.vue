@@ -85,58 +85,95 @@ export default {
 
     // 出发城市输入框获得焦点时触发
     // value 是选中的值，cb是回调函数，接收要展示的列表
-    queryDepartSearch(value, cb) {
-      if (!value) {
-        cb([]);
-        return;
+    async queryDepartSearch(value, cb) {
+      // 第一种
+      // this.querySearchCity(value,cb,(arr)=> {
+      //   this.form.departCity = arr[0].value;
+      //   this.form.departCode = arr[0].sort;
+      // })
+      const res = await this.querySearchCity(value);
+      if (res.length > 0) {
+        this.form.departCity = res[0].value;
+        this.form.departCode = res[0].sort;
       }
-      //发送后台请求
-      this.$axios({
-        url: "/airs/city",
-        params: {
-          name: value
-        }
-      }).then(res => {
-        const { data } = res.data;
-        const newDate = data.map(v => {
-          v.value = v.name.replace("市", "");
-          return v;
-        });
-        // 默认选中第一个
-        this.form.departCity = newDate[0].value;
-        this.form.departCode = newDate[0].sort;
 
-        cb(newDate);
-      });
+      cb(res);
     },
 
     // 目标城市输入框获得焦点时触发
     // value 是选中的值，cb是回调函数，接收要展示的列表
     queryDestSearch(value, cb) {
-      if (!value) {
-        cb([]);
-        return;
-      }
-      //发送后台请求
-      this.$axios({
-        url: "/airs/city",
-        params: {
-          name: value
-        }
-      }).then(res => {
-        const { data } = res.data;
-        const newDate = data.map(v => {
-          v.value = v.name.replace("市", "");
-          return v;
-        });
-        // 默认选中第一个
-        this.form.destCity = newDate[0].value;
-        this.form.destCode = newDate[0].sort;
+      // 第一种
+      // this.querySearchCity(value,cb,(arr)=> {
+      //   this.form.destCity = arr[0].value;
+      //   this.form.destCode = arr[0].sort;
+      // })
 
-        cb(newDate);
+      // 第二种调用
+      this.querySearchCity(value).then(res => {
+        if (res.length > 0) {
+          this.form.destCity = res[0].value;
+          this.form.destCode = res[0].sort;
+        }
+
+        cb(res);
       });
     },
+    //封装搜索城市的函数,第一种
+    // querySearchCity( queryString ,cb ,setCity){
+    //   if (!queryString) {
+    //     cb([]);
+    //     return;
+    //   }
+    //   //发送后台请求
+    //   this.$axios({
+    //     url: "/airs/city",
+    //     params: {
+    //       name: queryString
+    //     }
+    //   }).then(res => {
+    //     const { data } = res.data;
+    //     const newDate = data.map(v => {
+    //       v.value = v.name.replace("市", "");
+    //       return v;
+    //     });
+    //     // 默认选中第一个
+    //     // this.form.destCity = newDate[0].value;
+    //     // this.form.destCode = newDate[0].sort;
+    //     setCity(newDate)
 
+    //     cb(newDate);
+    //   });
+    // }
+
+    //第二种  封装搜索城市的函数
+    querySearchCity(queryString) {
+      return new Promise((resolve, reject) => {
+        if (!queryString) {
+          resolve([]);
+          return;
+        }
+        //发送后台请求
+        this.$axios({
+          url: "/airs/city",
+          params: {
+            name: queryString
+          }
+        }).then(res => {
+          const { data } = res.data;
+          const newDate = data.map(v => {
+            v.value = v.name.replace("市", "");
+            return v;
+          });
+          // 默认选中第一个
+          // this.form.destCity = newDate[0].value;
+          // this.form.destCode = newDate[0].sort;
+          // setCity(newDate);
+
+          resolve(newDate);
+        });
+      });
+    },
     // 出发城市下拉选择时触发
     handleDepartSelect(item) {
       this.form.departCity = item.value;
@@ -192,7 +229,7 @@ export default {
       // 跳转
       if (valid) {
         this.$router.push({
-          path: "/airs/flights",
+          path: "/air/flights",
           query: this.form
         });
       }
