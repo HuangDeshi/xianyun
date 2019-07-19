@@ -71,6 +71,7 @@ export default {};
   min-width: 1000px;
   .footer {
     ul {
+      margin-left: 30px;
       list-style: none;
       font-size: 12px;
       li {

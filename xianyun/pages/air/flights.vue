@@ -4,7 +4,7 @@
       <!-- 顶部过滤列表 -->
       <div class="flights-content">
         <!-- 过滤条件 -->
-        <div></div>
+        <FlightsFilters :data="cacheFlightsData" @changeFlights="changeFlights"></FlightsFilters>
 
         <!-- 航班头部布局 -->
         <FlightsListHead></FlightsListHead>
@@ -28,26 +28,37 @@
       <!-- 侧边栏 -->
       <div class="aside">
         <!-- 侧边栏组件 -->
+        <FlightsAside></FlightsAside>
       </div>
     </el-row>
   </section>
 </template>
 
 <script>
-import moment from "moment";
 import FlightsListHead from "@/components/air/flightsListHead.vue";
 import FlightsItem from "@/components/air/flightsItem.vue";
+import FlightsFilters from "@/components/air/flightsFilters.vue";
+import FlightsAside from "@/components/air/flightsAside.vue";
 
 export default {
   components: {
     FlightsListHead,
-    FlightsItem
+    FlightsItem,
+    FlightsFilters,
+    FlightsAside
   },
   data() {
     return {
       flightsData: {
-        flights: []
+        flights: [],
+        info: {},
+        options: {}
       }, // 总数据
+      cacheFlightsData: {
+        flights: [],
+        info: {},
+        options: {}
+      },
       dataList: [], // 只负责页面渲染的数组
       pageIndex: 1,
       total: 0,
@@ -55,21 +66,14 @@ export default {
     };
   },
   mounted() {
-    this.$axios({
-      url: "/airs",
-      params: this.$route.query
-    })
-      .then(res => {
-        this.flightsData = res.data;
-        //第一页数据
-        this.dataList = this.flightsData.flights.slice(0, this.pageSize);
-        this.total = this.flightsData.flights.length;
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    this.getData();
   },
   methods: {
+    changeFlights(arr) {
+      this.flightsData.flights = arr;
+      this.total = arr.length;
+      this.setDataList();
+    },
     // 切换条数时候触发
     handleSizeChange(value) {
       this.pageSize = value;
@@ -87,6 +91,22 @@ export default {
         (this.pageIndex - 1) * this.pageSize,
         this.pageIndex * this.pageSize
       );
+    },
+    getData() {
+      this.$axios({
+        url: "/airs",
+        params: this.$route.query
+      })
+        .then(res => {
+          this.flightsData = res.data;
+          this.cacheFlightsData = { ...res.data };
+          //第一页数据
+          this.dataList = this.flightsData.flights.slice(0, this.pageSize);
+          this.total = this.flightsData.flights.length;
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
   }
 };

@@ -86,7 +86,7 @@ export default {
   z-index: 9;
   position: absolute;
   left: 50%;
-  top: 50%;
+  top: 40%;
   width: 1000px;
   // background-color: red;
   margin-left: -500px;

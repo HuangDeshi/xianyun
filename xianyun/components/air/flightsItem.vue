@@ -1,6 +1,6 @@
 <template>
   <div class="flight-item">
-    <div @click="isshow=!isshow">
+    <div @click="handleisshow">
       <!-- 显示的机票信息 -->
       <el-row type="flex" align="middle" class="flight-info">
         <el-col :span="6">
@@ -47,7 +47,7 @@
             </el-col>
             <el-col :span="5" class="price">￥{{item.org_settle_price}}</el-col>
             <el-col :span="3" class="choose-button">
-              <el-button type="warning" size="mini">选定</el-button>
+              <el-button type="warning" size="mini" @click="handleToOrder(data.id,item.seat_xid)">选定</el-button>
               <p>剩余：{{item.discount}}</p>
             </el-col>
           </el-row>
@@ -80,11 +80,34 @@ export default {
       return `${hours}时${min}分钟`;
     }
   },
+  watch: {
+    data: "changData"
+  },
+
   data() {
     return {
       isshow: false
     };
   },
+  methods: {
+    handleToOrder(id, seat_xid) {
+      this.$router.push({
+        path: "/air/order",
+        query: {
+          id,
+          seat_xid
+        }
+      });
+    },
+    handleisshow() {
+      this.isshow = !this.isshow;
+    },
+    changData() {
+      this.isshow = false;
+    }
+  },
+
+  mounted() {},
   props: {
     // 数据
     data: {
@@ -92,6 +115,10 @@ export default {
       // 默认是空数组
       default: {}
     }
+    // isshows: {
+    //   type: Boolean,
+    //   default: false
+    // }
   }
 };
 </script>
